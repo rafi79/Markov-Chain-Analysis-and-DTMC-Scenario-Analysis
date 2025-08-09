@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEEE 802.15.6 DTMC Markov Chain Tutorial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>IEEE 802.15.6 DTMC Analysis</h1>
+            <p>Complete Guide to Discrete Time Markov Chain for WBAN</p>
+        </div>
+
+        <!-- Problem 1: Markov Chain Description -->
+        <div class="problem-section" id="problem1">
+            <div class="problem-header">
+                Problem 1: Markov Chain Analysis
+            </div>
+            <div class="problem-content">
+                <div class="question-box">
+                    <h3>Question 6:</h3>
+                    <p>Following figure depicts the <span class="highlight">Discrete Time Markov Chain (DTMC)</span> for the IEEE 802.15.6 slotted ALOHA.</p>
+                    <p><strong>Tasks:</strong></p>
+                    <ol>
+                        <li><strong>i.</strong> Describe the above Markov chain</li>
+                        <li><strong>ii.</strong> Find out the one-step transition probabilities</li>
+                        <li><strong>iii.</strong> Explain how would you solve the above DTMC?</li>
+                    </ol>
+                </div>
+
+                <!-- Markov Chain Diagram -->
+                <div class="markov-diagram">
+                    <h4>IEEE 802.15.6 DTMC State Diagram</h4>
+                    <div class="state-diagram">
+                        <div class="state-node">0</div>
+                        <span class="arrow">→</span>
+                        <div class="state-node">1</div>
+                        <span class="arrow">→</span>
+                        <div class="state-node">2</div>
+                        <span class="arrow">→</span>
+                        <div class="state-node">k</div>
+                        <span class="arrow">→</span>
+                        <div class="state-node">m</div>
+                    </div>
+                    <p class="diagram-caption">
+                        States represent retransmission attempts: 0 (initial) → 1 (1st retry) → ... → m (final retry)
+                    </p>
+                </div>
+
+                <!-- Part i: Describe the Markov Chain -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">i</div>
+                        <div class="step-title">Describe the Markov Chain</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What is this Problem About?</h4>
+                            <p>This is a <strong>Discrete Time Markov Chain (DTMC)</strong> that models how a wireless sensor node behaves when trying to send data using the <strong>IEEE 802.15.6 slotted ALOHA protocol</strong>. Think of it like a game where nodes take turns trying to send messages, and sometimes they collide!</p>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>What are the States?</h4>
+                            <p>The DTMC has <strong>states numbered 0, 1, 2, ..., k, ..., m</strong></p>
+                            
+                            <div class="definition-box">
+                                <strong>What each state means:</strong><br>
+                                • <strong>State 0</strong>: "Fresh start" - Node has a new packet ready to send<br>
+                                • <strong>State 1</strong>: "First retry" - Node tried once but failed, now trying again<br>
+                                • <strong>State 2</strong>: "Second retry" - Node tried twice but failed<br>
+                                • <strong>State k</strong>: "k-th retry" - Node has failed k times<br>
+                                • <strong>State m</strong>: "Final retry stage" - Maximum number of retries reached
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>What are the Events in Each Slot?</h4>
+                            <p>For a node in state k, three things can happen:</p>
+                            
+                            <div class="probability-grid">
+                                <div class="probability-card">
+                                    <div class="probability-title">p(k,ι) - IDLE</div>
+                                    <p>Node decides not to transmit (stays quiet)</p>
+                                </div>
+                                <div class="probability-card">
+                                    <div class="probability-title">p(k,s) - SUCCESS</div>
+                                    <p>Node transmits and succeeds (no collision)</p>
+                                </div>
+                                <div class="probability-card">
+                                    <div class="probability-title">p(k,c) - COLLISION</div>
+                                    <p>Node transmits but collides with others</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>How Does the Chain Work?</h4>
+                            <div class="result-box">
+                                <strong>Key Rules:</strong><br>
+                                1. <strong>Success from any state</strong> → Go back to state 0 (fresh start)<br>
+                                2. <strong>Collision</strong> → Move to next higher state (more retries)<br>
+                                3. <strong>Idle</strong> → Stay in same state (wait and try later)<br>
+                                4. <strong>At final state m</strong> → Can only stay or go back to 0
+                            </div>
+                        </div>
+
+                        <div class="concept-box">
+                            <h4>Physical Interpretation</h4>
+                            <p><strong>Why does this make sense?</strong></p>
+                            <ul>
+                                <li>When you fail to send a message, you become more "careful" (lower transmission probability)</li>
+                                <li>Each state represents how "frustrated" the node is</li>
+                                <li>Higher states = more failed attempts = more cautious behavior</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part ii: One-Step Transition Probabilities -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">ii</div>
+                        <div class="step-title">One-Step Transition Probabilities</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What are Transition Probabilities?</h4>
+                            <p><strong>Transition probability Pr(j|i)</strong> = Probability of moving from state i to state j in one time step</p>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Complete Set of Transitions</h4>
+                            
+                            <div class="equation-set">
+                                <h4>From State 0 (Initial State):</h4>
+                                <div class="equation">Pr(0|0) = p(0,s) + p(0,ι)    [Stay in state 0: success OR idle]</div>
+                                <div class="equation">Pr(1|0) = p(0,c)             [Move to state 1: collision]</div>
+                                <div class="equation">Pr(j|0) = 0                  [Can't jump to states 2,3,...,m directly]</div>
+                            </div>
+
+                            <div class="equation-set">
+                                <h4>From Intermediate States k (1 ≤ k ≤ m-1):</h4>
+                                <div class="equation">Pr(0|k) = p(k,s)             [Go to state 0: success]</div>
+                                <div class="equation">Pr(k|k) = p(k,ι)             [Stay in state k: idle]</div>
+                                <div class="equation">Pr(k+1|k) = p(k,c)           [Move to next state: collision]</div>
+                                <div class="equation">Pr(j|k) = 0                  [Can't move to any other states]</div>
+                            </div>
+
+                            <div class="equation-set">
+                                <h4>From Final State m:</h4>
+                                <div class="equation">Pr(0|m) = p(m,s)             [Go to state 0: success]</div>
+                                <div class="equation">Pr(m|m) = p(m,ι) + p(m,c)    [Stay in state m: idle OR collision]</div>
+                                <div class="equation">Pr(j|m) = 0                  [Can't move to any other states]</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Complete Transition Matrix</h4>
+                            <div class="matrix-display">
+                                <strong>Transition Matrix P:</strong><br><br>
+                                <div class="matrix-content">
+                                        State:  0    1    2   ...   k   k+1  ...  m-1   m<br>
+                                State 0:       [A    B    0   ...   0    0   ...   0    0  ]<br>
+                                State 1:       [C    D    E   ...   0    0   ...   0    0  ]<br>
+                                State 2:       [F    0    G   ...   0    0   ...   0    0  ]<br>
+                                  ⋮            [⋮    ⋮    ⋮    ⋱    ⋮    ⋮    ⋱    ⋮    ⋮  ]<br>
+                                State k:       [H    0    0   ...   I    J   ...   0    0  ]<br>
+                                  ⋮            [⋮    ⋮    ⋮    ⋱    ⋮    ⋮    ⋱    ⋮    ⋮  ]<br>
+                                State m:       [K    0    0   ...   0    0   ...   0    L  ]<br><br>
+                                
+                                <strong>Where:</strong><br>
+                                A = p(0,s) + p(0,ι),  B = p(0,c)<br>
+                                C = p(1,s),  D = p(1,ι),  E = p(1,c)<br>
+                                ... and so on
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="result-box">
+                            <strong>Summary of All Transition Probabilities:</strong><br><br>
+                            <div class="equation-system">
+                                ⎧ Pr(0|0) = p(0,s) + p(0,ι)<br>
+                                ⎪ Pr(1|0) = p(0,c)<br>
+                                ⎪ Pr(k+1|k) = p(k,c),     for 0 ≤ k ≤ m-1<br>
+                                ⎨ Pr(0|k) = p(k,s),       for 1 ≤ k ≤ m<br>
+                                ⎪ Pr(k|k) = p(k,ι),       for 1 ≤ k ≤ m-1<br>
+                                ⎪ Pr(m|m) = p(m,ι) + p(m,c)<br>
+                                ⎩ All other transitions = 0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part iii: How to Solve the DTMC -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">iii</div>
+                        <div class="step-title">How to Solve the DTMC</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>Step-by-Step Solution Method</h4>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 1: Define Problem Parameters</h4>
+                            <div class="formula-box">
+                                For a specific User Priority class i:<br>
+                                1. Get <strong>CP_max(i)</strong> and <strong>CP_min(i)</strong> from IEEE 802.15.6 standard<br>
+                                2. Calculate <strong>m = 2⌊log₂(CP_max(i)/CP_min(i))⌋</strong><br>
+                                3. Determine number of nodes <strong>n_i</strong> in this class
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 2: Calculate Event Probabilities</h4>
+                            <div class="equation-set">
+                                <h5>Transmission probability in state k:</h5>
+                                <div class="equation">1 - p_i(k,ι) = max(CP_max(i)/2^(k/2), CP_min(i))</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>Collision probability (depends on other nodes):</h5>
+                                <div class="equation">γ_i = 1 - (1-τ_i)^(n_i-1) × ∏[j≠i] (1-τ_j)^n_j</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>Success and collision probabilities:</h5>
+                                <div class="equation">p_i(k,s) = (1-γ_i) × {1-p_i(k,ι)}    [succeed if no collision]</div>
+                                <div class="equation">p_i(k,c) = γ_i × {1-p_i(k,ι)}        [collision if others transmit]</div>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 3: Set Up Balance Equations</h4>
+                            <div class="definition-box">
+                                <strong>For steady state, flow in = flow out for each state:</strong>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>State 0 balance:</h5>
+                                <div class="equation">π_i,0 × [p(0,s) + p(0,ι)] + ∑[k=1 to m] π_i,k × p(k,s) = π_i,0</div>
+                                <div class="equation">Simplifying: π_i,0 = (1/p(0,c)) × ∑[k=1 to m] π_i,k × p(k,s)</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>State k balance (1 ≤ k ≤ m-1):</h5>
+                                <div class="equation">π_i,k × [p(k,ι) + p(k,s) + p(k,c)] = π_i,k-1 × p(k-1,c) + π_i,k × p(k,ι)</div>
+                                <div class="equation">Simplifying: π_i,k = π_i,k-1 × p(k-1,c)/(1-p(k,ι))</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>State m balance:</h5>
+                                <div class="equation">π_i,m = π_i,m-1 × p(m-1,c)/p(m,s)</div>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 4: Express Everything in Terms of π₀</h4>
+                            <div class="equation-set">
+                                <h5>Recursive relationships:</h5>
+                                <div class="equation">π_i,1 = π_i,0 × γ_i × {1-p(0,ι)}/(1-p(1,ι))</div>
+                                <div class="equation">π_i,2 = π_i,1 × γ_i × {1-p(1,ι)}/(1-p(2,ι))</div>
+                                <div class="equation">...</div>
+                                <div class="equation">π_i,k = π_i,0 × γ_i^k × {1-p(0,ι)}/(1-p(k,ι))</div>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 5: Use Normalization Condition</h4>
+                            <div class="formula-box">
+                                All probabilities must sum to 1:<br>
+                                <div class="equation">∑[k=0 to m] π_i,k = 1</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>Substitute expressions from Step 4:</h5>
+                                <div class="equation">π_i,0 × [1 + γ_i×{1-p(0,ι)}/(1-p(1,ι)) + γ_i²×{1-p(0,ι)}/(1-p(2,ι)) + ... ] = 1</div>
+                                <div class="equation"><strong>Solve for π_i,0:</strong> π_i,0 = 1 / [denominator from above equation]</div>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 6: Calculate Performance Metrics</h4>
+                            <div class="equation-set">
+                                <h5>Transmission probability:</h5>
+                                <div class="equation">τ_i = ∑[k=0 to m] π_i,k × {1-p(k,ι)}</div>
+                            </div>
+                            
+                            <div class="equation-set">
+                                <h5>Throughput:</h5>
+                                <div class="equation">η_i = n_i × τ_i × (1-γ_i)</div>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <h4>STEP 7: Solve the Coupled System</h4>
+                            <div class="result-box">
+                                <strong>The key challenge:</strong> τ_i and γ_i depend on each other!<br><br>
+                                <strong>Method:</strong> Use iterative solution<br>
+                                1. <strong>Initialize:</strong> Start with guess values for all τ_i<br>
+                                2. <strong>Calculate:</strong> Compute γ_i from equation with current τ_i values<br>
+                                3. <strong>Update:</strong> Calculate new τ_i from DTMC solution with current γ_i<br>
+                                4. <strong>Repeat:</strong> Until convergence |τ_i^new - τ_i^old| < ε<br>
+                                5. <strong>Final:</strong> Compute all performance metrics
+                            </div>
+                        </div>
+
+                        <div class="concept-box">
+                            <h4>Why This Solution Method Works</h4>
+                            <ul>
+                                <li><strong>Markov property:</strong> Future depends only on current state</li>
+                                <li><strong>Steady state:</strong> System reaches equilibrium over time</li>
+                                <li><strong>Balance equations:</strong> Ensure probability conservation</li>
+                                <li><strong>Iterative solution:</strong> Handles the coupling between nodes</li>
+                            </ul>
+                            <p>This systematic approach allows us to predict the performance of wireless body area networks using IEEE 802.15.6 protocol!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problem 2: DTMC Scenario Analysis -->
+        <div class="problem-section" id="problem2">
+            <div class="problem-header">
+                Problem 2: DTMC Scenario Analysis
+            </div>
+            <div class="problem-content">
+                <div class="question-box">
+                    <h3>Question 7:</h3>
+                    <p>Follow the scenario at the figure drawn at Question 6.</p>
+                    <p>Let <span class="highlight">τ</span> be the probability that the tagged node transmits in a generic slot regardless of the fate of that transmission and <span class="highlight">γ</span> be the probability of collision. Considering the <strong>saturated and homogeneous traffic</strong> for the case of the IEEE 802.15.6, find out the following things:</p>
+                    <ol>
+                        <li><strong>i.</strong> The collision probability for the tagged node <strong>[3]</strong></li>
+                        <li><strong>ii.</strong> The balance equation <strong>[3]</strong></li>
+                        <li><strong>iii.</strong> The normalization relation in equation <strong>[2]</strong></li>
+                        <li><strong>iv.</strong> Stationary state probabilities at state k <strong>[3]</strong></li>
+                        <li><strong>v.</strong> The probability of successful transmission by the tagged node in a slot <strong>[3]</strong></li>
+                    </ol>
+                </div>
+
+                <div class="concept-box">
+                    <h4>Understanding the Problem Setup</h4>
+                    <div class="definition-box">
+                        <strong>What we have:</strong><br>
+                        • A <strong>tagged node</strong> (the node we're studying)<br>
+                        • <strong>τ</strong> = probability that the tagged node transmits in any slot<br>
+                        • <strong>γ</strong> = probability that the tagged node experiences collision<br>
+                        • <strong>Saturated and homogeneous traffic</strong> (all nodes always have packets to send, same priority)
+                    </div>
+                </div>
+
+                <!-- Part i: Collision Probability -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">i</div>
+                        <div class="step-title">Collision Probability for the Tagged Node</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What is Collision?</h4>
+                            <p><strong>Collision happens when:</strong> Two or more nodes transmit in the same time slot.</p>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>For Homogeneous Network (All Nodes Same Priority)</h4>
+                            <div class="definition-box">
+                                <strong>Scenario:</strong> Network has <strong>N total nodes</strong> of the same user priority class.
+                            </div>
+                            
+                            <div class="formula-box">
+                                <strong>Logic:</strong><br>
+                                • Our tagged node is 1 of the N nodes<br>
+                                • The other <strong>(N-1) nodes</strong> can cause collision<br>
+                                • Collision occurs when <strong>at least one</strong> of the other (N-1) nodes transmits
+                            </div>
+
+                            <div class="equation-set">
+                                <h5>Step-by-step calculation:</h5>
+                                <div class="calculation-step">
+                                    <strong>Step 1:</strong> Probability that one specific other node does NOT transmit = (1-τ)
+                                </div>
+                                <div class="calculation-step">
+                                    <strong>Step 2:</strong> Probability that ALL (N-1) other nodes do NOT transmit = (1-τ)^(N-1)
+                                </div>
+                                <div class="calculation-step">
+                                    <strong>Step 3:</strong> Probability that AT LEAST ONE other node transmits = 1 - (1-τ)^(N-1)
+                                </div>
+                            </div>
+
+                            <div class="result-box">
+                                <strong>Therefore:</strong><br>
+                                <div class="final-equation">γ = 1 - (1-τ)^(N-1)</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>For Heterogeneous Network (Multiple Priority Classes)</h4>
+                            <div class="definition-box">
+                                <strong>Scenario:</strong> Network has multiple user priority classes with different transmission probabilities.<br><br>
+                                <strong>Given:</strong><br>
+                                • <strong>n_i</strong> = number of nodes in class i<br>
+                                • <strong>τ_j</strong> = transmission probability for nodes in class j<br>
+                                • Tagged node is in class i
+                            </div>
+                            
+                            <div class="formula-box">
+                                <strong>Logic:</strong><br>
+                                • Tagged node experiences collision if ANY other node transmits<br>
+                                • Other nodes include: (n_i - 1) nodes from same class + all nodes from other classes
+                            </div>
+
+                            <div class="result-box">
+                                <strong>Formula:</strong><br>
+                                <div class="final-equation">γ_i = 1 - (1-τ_i)^(n_i-1) × ∏[j=0,j≠i]^7 (1-τ_j)^n_j</div>
+                                <br>
+                                <strong>Explanation:</strong><br>
+                                • <strong>(1-τ_i)^(n_i-1)</strong> = Probability that other nodes in same class don't transmit<br>
+                                • <strong>∏(1-τ_j)^n_j</strong> = Probability that nodes in all other classes don't transmit<br>
+                                • <strong>γ_i = 1 - (both conditions)</strong> = Probability of collision
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part ii: Balance Equation -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">ii</div>
+                        <div class="step-title">Balance Equation</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What are Balance Equations?</h4>
+                            <p><strong>Concept:</strong> In steady state, the <strong>rate of entering</strong> each state equals the <strong>rate of leaving</strong> that state.</p>
+                            <p><strong>Think of it like:</strong> Water flowing into and out of a bucket - in steady state, inflow = outflow.</p>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Balance Equations for Each State</h4>
+                            
+                            <div class="balance-state">
+                                <h5>State 0 (Initial State):</h5>
+                                <div class="flow-description">
+                                    <strong>Flow INTO state 0:</strong><br>
+                                    • From state 0 itself: π₀ × [p(0,s) + p(0,ι)] (success or idle)<br>
+                                    • From all other states: ∑[k=1 to m] π_k × p(k,s) (successful transmission)<br><br>
+                                    
+                                    <strong>Flow OUT of state 0:</strong><br>
+                                    • To state 1: π₀ × p(0,c) (collision)<br><br>
+                                    
+                                    <strong>Balance equation:</strong><br>
+                                    <div class="equation">π₀ × [p(0,s) + p(0,ι)] + ∑[k=1 to m] π_k × p(k,s) = π₀</div>
+                                </div>
+
+                                <div class="formula-box">
+                                    <strong>Simplifying:</strong> Since p(0,s) + p(0,ι) + p(0,c) = 1:<br>
+                                    <div class="equation">π₀ × [1 - p(0,c)] + ∑[k=1 to m] π_k × p(k,s) = π₀</div>
+                                    <br>
+                                    <strong>Final form:</strong><br>
+                                    <div class="final-equation">π₀ = (1/p(0,c)) × ∑[k=1 to m] π_k × p(k,s)</div>
+                                </div>
+                            </div>
+
+                            <div class="balance-state">
+                                <h5>Intermediate States k (1 ≤ k ≤ m-1):</h5>
+                                <div class="flow-description">
+                                    <strong>Flow INTO state k:</strong><br>
+                                    • From state k-1: π_{k-1} × p(k-1,c) (collision from previous state)<br>
+                                    • From state k itself: π_k × p(k,ι) (idle in current state)<br><br>
+                                    
+                                    <strong>Flow OUT of state k:</strong><br>
+                                    • To state 0: π_k × p(k,s) (successful transmission)<br>
+                                    • To state k+1: π_k × p(k,c) (collision to next state)<br><br>
+                                    
+                                    <strong>Balance equation:</strong><br>
+                                    <div class="equation">π_{k-1} × p(k-1,c) + π_k × p(k,ι) = π_k × p(k,s) + π_k × p(k,c)</div>
+                                </div>
+
+                                <div class="formula-box">
+                                    <strong>Simplifying:</strong><br>
+                                    <div class="equation">π_{k-1} × p(k-1,c) = π_k × [p(k,s) + p(k,c)]</div>
+                                    <div class="equation">π_{k-1} × p(k-1,c) = π_k × [1 - p(k,ι)]</div>
+                                    <br>
+                                    <strong>Final form:</strong><br>
+                                    <div class="final-equation">π_k = π_{k-1} × [p(k-1,c)/(1-p(k,ι))]</div>
+                                </div>
+                            </div>
+
+                            <div class="balance-state">
+                                <h5>Final State m:</h5>
+                                <div class="flow-description">
+                                    <strong>Flow INTO state m:</strong><br>
+                                    • From state m-1: π_{m-1} × p(m-1,c)<br>
+                                    • From state m itself: π_m × [p(m,ι) + p(m,c)]<br><br>
+                                    
+                                    <strong>Flow OUT of state m:</strong><br>
+                                    • To state 0: π_m × p(m,s)<br><br>
+                                    
+                                    <strong>Balance equation:</strong><br>
+                                    <div class="equation">π_{m-1} × p(m-1,c) + π_m × [p(m,ι) + p(m,c)] = π_m × p(m,s)</div>
+                                </div>
+
+                                <div class="result-box">
+                                    <strong>Final form:</strong><br>
+                                    <div class="final-equation">π_m = π_{m-1} × [p(m-1,c)/p(m,s)]</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part iii: Normalization Relation -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">iii</div>
+                        <div class="step-title">Normalization Relation</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What is Normalization?</h4>
+                            <p><strong>Concept:</strong> All state probabilities must add up to 1 (100% probability).</p>
+                        </div>
+
+                        <div class="formula-box">
+                            <strong>Mathematical expression:</strong><br>
+                            <div class="final-equation">∑[k=0 to m] π_k = 1</div>
+                            <br>
+                            <strong>Expanded form:</strong><br>
+                            <div class="equation">π₀ + π₁ + π₂ + ... + π_m = 1</div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Expressing All States in Terms of π₀</h4>
+                            
+                            <div class="equation-set">
+                                <h5>From balance equations, we can write:</h5>
+                                <div class="recursive-step">
+                                    <strong>State 1:</strong><br>
+                                    <div class="equation">π₁ = π₀ × [p(0,c)/(1-p(1,ι))]</div>
+                                </div>
+                                
+                                <div class="recursive-step">
+                                    <strong>State 2:</strong><br>
+                                    <div class="equation">π₂ = π₁ × [p(1,c)/(1-p(2,ι))] = π₀ × [p(0,c)/(1-p(1,ι))] × [p(1,c)/(1-p(2,ι))]</div>
+                                </div>
+                                
+                                <div class="recursive-step">
+                                    <strong>General pattern for state k:</strong><br>
+                                    <div class="equation">π_k = π₀ × γ^k × {1-p(0,ι)}/{1-p(k,ι)}     (for 0 < k < m)</div>
+                                </div>
+                                
+                                <div class="recursive-step">
+                                    <strong>State m:</strong><br>
+                                    <div class="equation">π_m = π₀ × γ^m × {1-p(0,ι)}/[(1-γ)×{1-p(m,ι)}]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Solving for π₀</h4>
+                            
+                            <div class="formula-box">
+                                <strong>Substitute into normalization equation:</strong><br>
+                                <div class="equation">π₀ × [1 + ∑[k=1 to m-1] γ^k×{1-p(0,ι)}/{1-p(k,ι)} + γ^m×{1-p(0,ι)}/[(1-γ)×{1-p(m,ι)}]] = 1</div>
+                            </div>
+
+                            <div class="result-box">
+                                <strong>Therefore:</strong><br>
+                                <div class="final-equation">π₀ = 1 / [denominator from above equation]</div>
+                                <br>
+                                <strong>Simplified form (from IEEE 802.15.6 paper):</strong><br>
+                                <div class="equation">π₀ = 1 / [∑[x=0 to m/2-1] (2^x×γ^{2x} + 2^x×γ^{2x+1}) + 2^{m/2}×γ^m/(1-γ)]</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part iv: Stationary State Probabilities -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">iv</div>
+                        <div class="step-title">Stationary State Probabilities at State k</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="sub-section">
+                            <h4>General Formula</h4>
+                            
+                            <div class="result-box">
+                                <strong>For any state k (0 < k < m):</strong><br>
+                                <div class="final-equation">π_k = π₀ × γ^k × {1-p(0,ι)}/{1-p(k,ι)}</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Using IEEE 802.15.6 Parameters</h4>
+                            
+                            <div class="formula-box">
+                                <strong>Recall that:</strong><br>
+                                <div class="equation">1-p(k,ι) = max(CP_max/2^{k/2}, CP_min)</div>
+                                <br>
+                                <strong>So the probabilities become:</strong><br>
+                                <div class="equation">π_k = π₀ × γ^k × {1-p(0,ι)}/{1-max(CP_max/2^{k/2}, CP_min)}</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Specific Examples</h4>
+                            
+                            <div class="probability-grid">
+                                <div class="probability-card">
+                                    <div class="probability-title">State 0</div>
+                                    <div class="formula-box">
+                                        π₀ = [calculated from normalization as above]
+                                    </div>
+                                </div>
+                                
+                                <div class="probability-card">
+                                    <div class="probability-title">State 1</div>
+                                    <div class="formula-box">
+                                        π₁ = π₀ × γ × {1-p(0,ι)}/{1-p(1,ι)}
+                                    </div>
+                                </div>
+                                
+                                <div class="probability-card">
+                                    <div class="probability-title">State 2</div>
+                                    <div class="formula-box">
+                                        π₂ = π₀ × γ² × {1-p(0,ι)}/{1-p(2,ι)}
+                                    </div>
+                                </div>
+                                
+                                <div class="probability-card">
+                                    <div class="probability-title">State m</div>
+                                    <div class="formula-box">
+                                        π_m = π₀ × γ^m × {1-p(0,ι)}/[(1-γ)×{1-p(m,ι)}]
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part v: Probability of Successful Transmission -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">v</div>
+                        <div class="step-title">Probability of Successful Transmission</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>What is Success Probability?</h4>
+                            <p><strong>Definition:</strong> Probability that the tagged node successfully transmits a packet in any given time slot.</p>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Mathematical Derivation</h4>
+                            
+                            <div class="definition-box">
+                                <strong>Success occurs when:</strong><br>
+                                1. Node decides to transmit: probability = {1-p(k,ι)}<br>
+                                2. No collision happens: probability = (1-γ)<br>
+                                3. Node is in state k: probability = π_k
+                            </div>
+                            
+                            <div class="formula-box">
+                                <strong>For a node in state k:</strong><br>
+                                <div class="equation">P(success from state k) = π_k × {1-p(k,ι)} × (1-γ)</div>
+                                <br>
+                                <strong>Total success probability (summing over all states):</strong><br>
+                                <div class="equation">P_success = ∑[k=0 to m] π_k × {1-p(k,ι)} × (1-γ)</div>
+                            </div>
+                            
+                            <div class="result-box">
+                                <strong>Factoring out (1-γ):</strong><br>
+                                <div class="final-equation">P_success = (1-γ) × ∑[k=0 to m] π_k × {1-p(k,ι)}</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Alternative Expression Using τ</h4>
+                            
+                            <div class="formula-box">
+                                <strong>Recall that τ is the total transmission probability:</strong><br>
+                                <div class="equation">τ = ∑[k=0 to m] π_k × {1-p(k,ι)}</div>
+                            </div>
+                            
+                            <div class="result-box">
+                                <strong>Therefore:</strong><br>
+                                <div class="final-equation">P_success = τ × (1-γ)</div>
+                            </div>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>For Homogeneous Network</h4>
+                            
+                            <div class="formula-box">
+                                <strong>Substituting γ = 1-(1-τ)^{N-1}:</strong><br>
+                                <div class="final-equation">P_success = τ × (1-τ)^{N-1}</div>
+                            </div>
+                        </div>
+
+                        <div class="concept-box">
+                            <h4>Physical Interpretation</h4>
+                            <p><strong>This makes intuitive sense:</strong></p>
+                            <ul>
+                                <li><strong>τ</strong>: Probability that our node transmits</li>
+                                <li><strong>(1-γ)</strong>: Probability that no collision occurs</li>
+                                <li><strong>τ×(1-γ)</strong>: Probability of both conditions (successful transmission)</li>
+                            </ul>
+                        </div>
+
+                        <div class="sub-section">
+                            <h4>Throughput Calculation</h4>
+                            
+                            <div class="result-box">
+                                <strong>For a network with n_i nodes of class i:</strong><br>
+                                <div class="final-equation">η_i = n_i × τ_i × (1-γ_i)</div>
+                                <br>
+                                <strong>This represents:</strong> Average number of successful transmissions per slot for class i.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Summary -->
+                <div class="final-answer">
+                    <h3>Summary of Key Results</h3>
+                    <div class="answer-grid">
+                        <div class="answer-item">
+                            <strong>1. Collision probability:</strong><br>
+                            γ = 1-(1-τ)^{N-1}
+                        </div>
+                        <div class="answer-item">
+                            <strong>2. Balance equations:</strong><br>
+                            π_k = π_{k-1} × p(k-1,c)/(1-p(k,ι))
+                        </div>
+                        <div class="answer-item">
+                            <strong>3. Normalization:</strong><br>
+                            ∑π_k = 1 → solve for π₀
+                        </div>
+                        <div class="answer-item">
+                            <strong>4. State probabilities:</strong><br>
+                            π_k = π₀ × γ^k × {1-p(0,ι)}/{1-p(k,ι)}
+                        </div>
+                        <div class="answer-item">
+                            <strong>5. Success probability:</strong><br>
+                            P_success = τ×(1-γ)
+                        </div>
+                    </div>
+                    <p class="summary-text">
+                        These equations form a complete mathematical model for analyzing IEEE 802.15.6 wireless body area networks!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Learning Points -->
+        <div class="problem-section" id="learning">
+            <div class="problem-header">
+                Key Learning Points & Concepts
+            </div>
+            <div class="problem-content">
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">📚</div>
+                        <div class="step-title">What is a Discrete Time Markov Chain (DTMC)?</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>Simple Explanation</h4>
+                            <p>A <strong>DTMC</strong> is like a game where:</p>
+                            <ul>
+                                <li>You're always in one of several "states"</li>
+                                <li>Every turn, you might move to a different state or stay in the same one</li>
+                                <li>The probability of where you go next depends ONLY on where you are now (not on how you got there)</li>
+                                <li>The rules never change over time</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">🔄</div>
+                        <div class="step-title">Why Use DTMC for Wireless Networks?</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="probability-grid">
+                            <div class="probability-card">
+                                <div class="probability-title">State Representation</div>
+                                <p>Each state represents how many times a node has failed to transmit. Higher states = more frustrated nodes = more careful behavior.</p>
+                            </div>
+                            <div class="probability-card">
+                                <div class="probability-title">Transition Modeling</div>
+                                <p>State transitions model what happens after each transmission attempt: success (go to state 0), collision (go to next state), or idle (stay).</p>
+                            </div>
+                            <div class="probability-card">
+                                <div class="probability-title">Performance Analysis</div>
+                                <p>Steady-state probabilities tell us long-term behavior: how often nodes transmit, collision rates, and overall throughput.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">⚖️</div>
+                        <div class="step-title">Understanding Balance Equations</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="concept-box">
+                            <h4>Water Tank Analogy</h4>
+                            <p>Think of each state as a water tank:</p>
+                            <ul>
+                                <li><strong>Water flowing IN</strong> = Probability of entering this state</li>
+                                <li><strong>Water flowing OUT</strong> = Probability of leaving this state</li>
+                                <li><strong>Steady state</strong> = Water level constant (inflow = outflow)</li>
+                                <li><strong>Balance equation</strong> = Mathematical expression of this equilibrium</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">🎯</div>
+                        <div class="step-title">Practical Applications</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="definition-box">
+                            <strong>This analysis helps us:</strong><br>
+                            • <strong>Design better protocols</strong> by predicting performance<br>
+                            • <strong>Optimize network parameters</strong> for maximum throughput<br>
+                            • <strong>Plan network capacity</strong> based on expected load<br>
+                            • <strong>Troubleshoot problems</strong> by identifying bottlenecks<br>
+                            • <strong>Compare different approaches</strong> mathematically rather than by trial and error
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation and Footer -->
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.scrollTo(0, 0)">Back to Top</button>
+            <button class="nav-btn" onclick="window.print()">Print This Tutorial</button>
+            <button class="nav-btn" id="toggle-toc">Table of Contents</button>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 IEEE 802.15.6 DTMC Tutorial | Designed for Educational Purposes</p>
+        </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div id="table-of-contents" class="toc-container">
+        <h4>Table of Contents</h4>
+        <ul>
+            <li><a href="#problem1">Problem 1: Markov Chain</a></li>
+            <li><a href="#problem2">Problem 2: DTMC Analysis</a></li>
+            <li><a href="#learning">Key Learning Points</a></li>
+        </ul>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+
+    <!-- JavaScript will be added separately -->
+    <script src="script.js"></script>
+</body>
+</html>
